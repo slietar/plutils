@@ -1,0 +1,25 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "expression_lib"
+version = "0.0.1"
+requires-python = ">=3.14"
+classifiers = [
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "polars>=1.8.2",
+]
+
+
+[tool.uv]
+cache-keys = [
+  {file = "pyproject.toml"},
+  {file = "rust/Cargo.toml"},
+  {file = "**/*.rs"},
+]
+config-settings = { build-args = '--profile=dev' }
