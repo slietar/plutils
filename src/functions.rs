@@ -70,6 +70,54 @@ pub fn implode_like(
 }
 
 
+// See also: trim_lists_to_normalized_offsets()
+// https://github.com/pola-rs/polars/blob/778dbb645ccbff8b1e5999a279037571a03c718b/crates/polars-compute/src/trim_lists_to_normalized_offsets.rs#L9
+
+pub fn implode_with_offsets(
+    target_series: &Series,
+    offsets_series: &Series,
+) -> PolarsResult<Series> {
+    let cast_offsets_series = offsets_series.cast(&DataType::Int64)?;
+    let offsets_ca = cast_offsets_series.i64().unwrap();
+
+    if offsets_ca.first().unwrap() != 0 {
+        return Err(
+            PolarsError::ShapeMismatch(
+                "Offsets must start at zero".into(),
+            )
+        );
+    }
+
+    let (offsets_aligned_ca, target_aligned_series) = align_chunks_binary_ca_series(offsets_ca, target_series);
+
+    let new_chunks_iter = target_aligned_series
+        .chunks()
+        .iter()
+        .zip(
+            offsets_aligned_ca.downcast_iter()
+        )
+        .map(|(target_chunk, offsets_chunk)| {
+            ListArray::new(
+                DataType::List(
+                    Box::new(
+                        target_series.dtype().clone()
+                    )
+                ).to_arrow(CompatLevel::newest()),
+                unsafe { OffsetsBuffer::new_unchecked(offsets_chunk.values().clone()) },
+                target_chunk.clone(),
+                offsets_chunk.validity().cloned(),
+            )
+        });
+
+    let new_ca = ListChunked::from_chunk_iter(
+        target_series.name().clone(),
+        new_chunks_iter,
+    );
+
+    Ok(new_ca.into_series())
+}
+
+
 pub fn get_offsets(series: &Series) -> PolarsResult<Series> {
     let list = series.list()?;
     let name = series.name().clone();
@@ -83,7 +131,7 @@ pub fn get_offsets(series: &Series) -> PolarsResult<Series> {
             return Ok(
                 Series::new(
                     name,
-                    offsets.as_slice()
+                    offsets.as_slice(),
                 )
             );
         }
