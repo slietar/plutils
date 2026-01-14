@@ -1,24 +1,26 @@
 [build-system]
-requires = ["maturin>=1.0,<2.0"]
+requires = ["maturin~=1.0"]
 build-backend = "maturin"
 
 [project]
 name = "plutils"
-version = "0.0.0"
+version = "0.0"
+description = "Collection of utilities for working with Polars"
+license = "EUPL-1.2"
+readme = "readme.md"
 requires-python = ">=3.10"
 dependencies = [
-    "polars>=1.8.2",
+    "polars~=1.36",
     "pyarrow>=22.0.0",
 ]
 
+[project.urls]
+Repository = "https://github.com/slietar/plutils"
 
 [tool.uv]
 cache-keys = [
-  {file = "pyproject.toml"},
-  {file = "rust/Cargo.toml"},
-  {file = "**/*.rs"},
+    { file = "pyproject.toml" },
+    { file = "rust/Cargo.toml" },
+    { file = "**/*.rs" },
 ]
 config-settings = { build-args = '--profile=dev' }
-
-# [tool.maturin]
-# profile = "release"
