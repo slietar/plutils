@@ -25,17 +25,17 @@ include = ["src/*"]
 [[tool.oryn.distributions]]
 name = "macos"
 platform = "macosx_14_0_arm64"
-overrides = { "src/plplugins/extension.abi3.so" = "rust/target/aarch64-apple-darwin/debug/libplplugins.dylib" }
+overrides = { "src/plplugins/extension.abi3.so" = "rust/target/aarch64-apple-darwin/release/libplplugins.dylib" }
 
 [[tool.oryn.distributions]]
 name = "linux-x86_64"
 platform = "manylinux2014_x86_64"
-overrides = { "src/plplugins/extension.abi3.so" = "rust/target/x86_64-unknown-linux-gnu/debug/libplplugins.so" }
+overrides = { "src/plplugins/extension.abi3.so" = "rust/target/x86_64-unknown-linux-gnu/release/libplplugins.so" }
 
 [[tool.oryn.distributions]]
 name = "linux-aarch64"
 platform = "manylinux2014_aarch64"
-overrides = { "src/plplugins/extension.abi3.so" = "rust/target/aarch64-unknown-linux-gnu/debug/libplplugins.so" }
+overrides = { "src/plplugins/extension.abi3.so" = "rust/target/aarch64-unknown-linux-gnu/release/libplplugins.so" }
 
 [tool.uv]
 cache-keys = [
